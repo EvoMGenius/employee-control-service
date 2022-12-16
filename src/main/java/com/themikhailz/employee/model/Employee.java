@@ -3,6 +3,7 @@ package com.themikhailz.employee.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +36,8 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private List<EmployeeWorkingDay> workingDays;
+
+    private LocalDateTime createTime;
 
     @Override
     public boolean equals(Object o) {

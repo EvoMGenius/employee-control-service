@@ -12,7 +12,7 @@ public interface EmployeeService {
 
     Employee create(@NonNull CreateEmployeeArgument argument);
 
-    Employee update(@NonNull UpdateEmployeeArgument argument);
+    Employee update(@NonNull UpdateEmployeeArgument argument, @NonNull Integer employeeId);
 
     List<Employee> getList(@NonNull SearchEmployeeArgument argument);
 
