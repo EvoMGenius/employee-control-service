@@ -1,7 +1,10 @@
 package com.themikhailz.employee.service.employee;
 
+import com.google.common.collect.Lists;
 import com.querydsl.core.types.Predicate;
+import com.themikhailz.employee.exception.EmployeeNotFoundException;
 import com.themikhailz.employee.model.Employee;
+import com.themikhailz.employee.model.QEmployee;
 import com.themikhailz.employee.repository.EmployeeRepository;
 import com.themikhailz.employee.service.employee.argument.CreateEmployeeArgument;
 import com.themikhailz.employee.service.employee.argument.SearchEmployeeArgument;
@@ -49,16 +52,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> getList(@NonNull SearchEmployeeArgument argument) {
-        return null;
+        Predicate predicate = buildPredicate(argument);
+
+        return Lists.newArrayList(repository.findAll(predicate));
     }
 
     @Override
     public Employee getExisting(@NonNull Integer id) {
-        return repository.findById(id).orElseThrow(()-> new EmployeeNotFoundException("Employee with this id:%d is not found", id));
+        return repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException(String.format("Employee with this id:%d is not found", id)));
     }
 
     private Predicate buildPredicate(SearchEmployeeArgument argument) {
-        QPredicates predicates = QPredicates.builder();
+        QEmployee qEmployee = QEmployee.employee;
+
+        QPredicates predicates = QPredicates.builder()
+                                            .add(argument.getFirstName(), qEmployee.person.firstName::containsIgnoreCase)
+                                            .add(argument.getLastName(), qEmployee.person.lastName::containsIgnoreCase)
+                                            .add(argument.getMiddleName(), qEmployee.person.middleName::containsIgnoreCase)
+                                            .add(argument.getPhoneNumber(), qEmployee.phoneNumber::containsIgnoreCase)
+                                            .add(argument.getPost(), qEmployee.post::containsIgnoreCase)
+                                            .add(argument.getSalary(), qEmployee.salary::eq);
 
         return predicates.buildAnd();
     }
